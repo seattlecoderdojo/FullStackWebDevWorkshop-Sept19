@@ -5,7 +5,7 @@ An introduction for full stack web development: build a website and some microse
 
 We will be developing our websites on Glitch.com. [Go to glitch.com now](https://glitch.com) and sign up for an account. They're free.
 
-## [Week 1: An Introduction to HTML](week1/readme.md)
+## [Week 1: An Introduction to HTML](week1/README.md)
 
 We'll go through some basics of HTML, build a simple "About Me" web page to practice, and add a little JavaScript to it for fun.
 
