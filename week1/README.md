@@ -20,9 +20,13 @@ To get started, we're going to clone the base project on Glitch.com. Glitch prov
 
 We'll get into these. Later. Let's get cloned.
 
-1. First you need to go to [Glitch.com](https://glitch.com) and either sign in or create an account.
-2. Next, go to the [silicon-stealer](https://glitch.com/~silicon-stealer) project. 
-3. Next click the remix button (it's got a microphone on it).
+1. Go to [Glitch.com](https://glitch.com) and either sign in or create an account.
+
+2. Go to the [silicon-stealer](https://glitch.com/~silicon-stealer) project. 
+
+3. Click the **remix** button (it's got a microphone on it).
+
+   ![screenshot](images/remix.jpg)
 
 You now have the basic project set up.
 
@@ -92,7 +96,7 @@ The stuff you'll expect to go on the page goes in the **body** element.
 ```html
   <body>
     <header>
-      <h1 class="center">
+      <h1>
         Hi, I'm [your name here]!
       </h1>
     </header>
@@ -227,12 +231,159 @@ Embed a couple more favorites. Notice I didn't specifically say music videos, so
 
 ## Let's mess with CSS
 
-[some fun css tricks]
+CSS stands for "Cascading Style Sheets" and it lets you create styles that can be applied to many different parts of your web page without having to include the full definition of each style in every element.
+
+If you look in the `head` section of your html page, you'll see there's a link that tells the page where to find the stylesheet.
+
+```html
+    <!-- import the webpage's stylesheet -->
+    <link rel="stylesheet" href="/style.css" />
+```
+
+That sheet is in your public directory.
+
+![screenshot](images/css-start.jpg)
 
 
+
+To help the browser know what to apply styles to, CSS uses **selectors**. There are a lot that can get sort of complex, but today we'll concentrate on the three most common types:
+
+- **Element selectors** - Use to style an element like <img> or <H1>. They use the element's opening tag and look like...
+
+  ```css
+  h1 {
+      font-weight:bold;
+  }
+  ```
+
+  
+
+- **ID selectors** - Use to style an element you've given a specific ID attribute. They put a hash/pound symbol before the ID's value and look like...
+
+  ```css
+  #firstvideo {
+      border: 6px dashed darkblue;
+  }
+  ```
+
+  
+
+- **Class selectors** - Use to style an element you've given one or more class attributes. They put a dot before the class name and look like...
+
+  ```css
+  .center {
+    margin-left:auto;
+    margin-right:auto;
+  }
+  ```
+
+If you go back to our index.html, we have an `H1` element with a `center` class. 
+
+Let's use an element style to change the color of our header. Open up the [Mozilla Developer Network color codes chart](https://developer.mozilla.org/en-US/docs/Web/CSS/color_value). There you'll see a whole bunch of colors. What we're going to focus on are the **Keyword** and **Live keyword** columns. The **Keyword** is a name for the color that your browser will recognize. The **Live keyword** column shows how your browser will render that. 
+
+### Using element and class selectors
+
+Let's make your header more colorful.
+
+In your style.css file, make an element style for "header" and let's make the **background-color** be **firebrick**.
+
+```css
+header {
+  background-color: firebrick;
+}
+```
+
+Notice how the properties are stated. We use the selector, put an opening curly brace, then we add a property, a colon after it, the value, and then a semicolon.
+
+When we're done with the properties, we add a closing curly brace.
+
+Let's go look at your page.
+
+![screenshot](images/css-namecolor.jpg)
+
+Hmm... the  color is pretty tight. Let's add a margin to make the text less crowded by the edges.
+
+```css
+header {
+  background-color: firebrick;
+  margin: 20px;
+}
+```
+
+Reload the page. Wait, that didn't work. It got smaller.
+
+![](images/css-namecolor2.jpg)
+
+We need to understand a little about the CSS Box model.
+
+![](images/Css_box_model.svg)
+
+When you have an element that creates its own line or section, you can set properties that change the spacing. There are four levels, from the most inside to the most outside, they go: Content, Padding, Border, and Margin. The margin creates spacing *around* the element, but not inside it. Since we have a set width for the body, creating that spacing *around* the element, made it narrower to fit the space.
+
+What if we change `margin` to `padding` in the `header` style?
+
+![](images/css-namecolor3.jpg)
+
+Now the added space is inside the colored part.
+
+But that black doesn't look good against the red. It's harder to read for some people with certain kinds of color blindness.
+
+Let's add a class to change the text color.
+
+```css
+.white-text {
+    color: white;
+}
+```
+
+Let's switch back to the HTML file. Now see how my H1 has a `center` class attribute? Let's add `white-text` to that. Just add a space and the class name.
+
+ ```html
+      <h1 class="center white-text">
+        Hi, I'm Greg!
+      </h1>
+ ```
+
+Now reload your web page.
+
+![](images/css-namecolor4.jpg)
+
+Take a break here and experiment with different colors and padding values until your colors are the way you want them. And if you're feeling adventurous, try adding a `text-align` property to the `H1` style. The values for that can be left, right, center, or justify. 
+
+### Let's add some IDs
+
+If we scroll down, the videos don't seem distinct enough. They're too close together. I'm going to add an ID to each of my iframe elements.
+
+```html
+<iframe id="video1" ...></iframe>
+<iframe id="video2" ...></iframe>
+```
+
+Now I can go back to my `style.css` file and create styles for those.
+
+```css
+#video1 {
+  border: 6px dashed coral;
+  margin-bottom: 30px;
+}
+
+#video2 {
+  border: 9px magenta; 
+  border-style: hidden double dashed;
+}
+```
+
+![screenshot](images/videoborders.jpg)
+
+For `video1` we specified a border that was 6 pixels wide, dashed, and a coral color. Then we added a margin on the bottom only to push the second video down a bit. 
+
+For `video2` we specified a 9-pixel border in magenta, but left out the style of the border. By specifying that separately, we were able to give it three different styles: one for the top, one for the sides, and one for the bottom. 
+
+Experiment with borders. The styles you can use are `none, hidden, dotted, dashed, solid, double, groove, ridge, inset`, and `outset`.
 
 ## Coming Next Week
 
 Take some time and personalize the page, but don't give out too much information.
 
 Next week, we'll create a password-protected "Friends-Only" section of the site where you can share stuff with your friends that the rest of the world doesn't deserve to know.
+
