@@ -248,7 +248,7 @@ That sheet is in your public directory.
 
 To help the browser know what to apply styles to, CSS uses **selectors**. There are a lot that can get sort of complex, but today we'll concentrate on the three most common types:
 
-- **Element selectors** - Use to style an element like <img> or <H1>. They use the element's opening tag and look like...
+- **Element selectors** - Use to style an element like &lt;img&gt; or &lt;H1&gt;. They use the element's opening tag and look like...
 
   ```css
   h1 {
