@@ -15,3 +15,11 @@ What we're going to do this week:
 
 ## What is Node.js
 
+JavaScript started life way back in the 1990s as a language that let you make web pages do more programmatic things. It has NOTHING to do with Java. In fact, many people say that Java and JavaScript share as much in common as ham and hamsters.
+
+![hamster](images/ham-ster.png)
+
+There are many competing theories why it's named what it is. None of them are as funny as this cartoon.
+
+I'd tell you why it was created and what makes it different, but we came here to make stuff. History lessons are for the school part of the week. Let's just say it's JavaScript for controlling stuff on your web server.
+
