@@ -1,6 +1,6 @@
 # Week 2: Members-only
 
-**FIRST AND FOREMOST:** Let's go back to glitch.com and open the projects we were working on last week. If you missed last week, you can clone [my project from last week](https://glitch.com/edit/#!/shocking-emoji), by following the link, clicking on the "shocking-emoji" title in the upper left of the screen, and clicking the "Remix Project" button. You will get my  page, but you can go back to [last week's write-up](../week1/readme.md) and learn how to customize it and make it your own.
+**FIRST AND FOREMOST:** Let's go back to glitch.com and open the projects we were working on last week. If you missed last week, you can clone [my project from last week](https://glitch.com/edit/#!/shocking-emoji), by following the link, clicking on the "shocking-emoji" title in the upper left of the screen, and clicking the "Remix Project" button. You will get my  page, but you can go back to [last week's write-up](https://github.com/seattlecoderdojo/FullStackWebDevWorkshop-Sept19/tree/master/week1) and learn how to customize it and make it your own.
 
 
 
@@ -31,7 +31,9 @@ There are two main reasons Node caught on.
 
 One is that people felt it performed better than Apache, the most popular web server of the time. We can go into why people thought that, but again, we're not here for a history lesson. 
 
-The second is node had just a medium selection of core functions, and then you just added modules to outfit a Node server with what you needed. Those modules are declared in your `package,json` file. Let's look at that file in our projects.
+The second is node had just a medium selection of core functions, and then you just added modules to outfit a Node server with what you needed. This helped make it faster because it wasn't too heavy, plus people started making and sharing tons of modules which made it easier to do cool things. 
+
+Those modules are declared in your `package,json` file. Let's look at that file in our projects.
 
 ![cap of package.json](images/package1.jpg)
 
@@ -39,13 +41,13 @@ This file is standard for Node.js apps, tells you a lot about the app, and helps
 
 The information is called properties. The functionality is called methods.
 
-So an address object might have information like the address of someone's house and a property would be the name of the street they live on. A method might be a bit of code that redirects the user to a Google Maps page with the house marked on it.
+So an address object might have a property like the name of the street you live on. A method might be a bit of code that redirects the user to a Google Maps page with the house marked on it.
 
 An object will be wrapped in curly braces {}. We can see the whole thing is wrapped in curly braces. It's one big object. But inside, there are other sections wrapped in curly braces. Objects can have objects inside them... sort of like those Russian nesting dolls that fit inside each other.
 
 ![nesting dolls](images/matrioshka-1631194_640.jpg)
 
-We'll get into methods later. We'll have to. But for now, let's look at properties. A property is the property name (usually in quotes), then a colon, then a value.
+We'll get into methods later. We'll have to. But for now, let's look at properties. A property is created by putting the property's name (usually in quotes), then a colon, then a value.
 
 ```javascript
 "name": "hello-sqlite"
@@ -62,11 +64,11 @@ Some of the properties have an object as their value. For example:
   }
 ```
 
-The `dependencies` object tells us what modules our Node.js project is using. There are some core ones for reading files and doing basic things and they're included with Node, but for more extensive stuff, we load modules from a module store.
+The `dependencies` property is object with properties that tell us what modules our Node.js app is using. There are some core ones for reading files and doing basic things and they're included with Node, but for more extensive stuff, we load modules from a module store.
 
 So if we're going to need more modules, we need to add them to our dependencies. For this project we'll add a few. But first let's just add one. Let's change that `dependencies` object.
 
-Each module is declared as a property name that is the name of the module (it has to match the name in a package manager like [npmjs.org]()), then the value is the version. We'll get into why you might use the up arrow before it in a different class.
+Each module is declared as a property name that is the name of the module, then the value is the version. We'll get into why you might use the up arrow before it in a different workshop.
 
 Remember to make sure that every property in the object except the last has a comma after it.
 
@@ -86,7 +88,7 @@ I did it for a good reason. If you ever learn anything about programming, learn 
 
 So if you're going to learn to program, you need to learn to fix your code.
 
-With Node, the best place to start is the logs. 
+With Node on Glitch, the best place to start is the logs. 
 
 In the lower left of your Glitch screen, click "Tools," then from the tools panel, click "Logs."
 
@@ -94,7 +96,7 @@ In the lower left of your Glitch screen, click "Tools," then from the tools pane
 
 ![screencap of log](images/logs1.jpg)
 
-And there we see, you have a 404 or "not found" error for the `sequelise` module. There is no such module.
+And there we see you have a 404 or "not found" error for the `sequelise` module. There is no such module installed and it couldn't find one with that name in the npmjs.org registry.
 
 But the app is listening. It is running. Why? Because there's no code in our app that needs that module yet. If we had code in the app that needed it, that code would break and then the app might not run at all or might fail when we didn't expect it.
 
