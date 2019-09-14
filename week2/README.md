@@ -1,4 +1,4 @@
-# Week 2: Members-only
+# Week 2: Let's get dangerous
 
 **FIRST AND FOREMOST:** Let's go back to glitch.com and open the projects we were working on last week. If you missed last week, you can clone [my project from last week](https://glitch.com/edit/#!/shocking-emoji), by following the link, clicking on the "shocking-emoji" title in the upper left of the screen, and clicking the "Remix Project" button. You will get my  page, but you can go back to [last week's write-up](https://github.com/seattlecoderdojo/FullStackWebDevWorkshop-Sept19/tree/master/week1) and learn how to customize it and make it your own.
 
@@ -8,12 +8,6 @@ What we're going to do this week:
 
 1. Learn about node and its module system
 2. Create our member page
-4. Learn about sessions 
-4. Keep someone out! 
-5. Let them in!
-6. Add a database
-7. Add a login
-8. Manage members
 
 
 
@@ -210,9 +204,9 @@ Now add `/boo.html` to the address line in the browser window where you're viewi
 
 But when we want the server to do special processing of the page or maybe check if someone has permission to even view it, we need to create a route in our web app. That means...
 
-You're going to start writing JavaScript code.
+You're going to start writing some JavaScript code and it's going to be more complicated that popping up an alert when you click a button.
 
-![noooo](/images/nooooo.gif)
+![nope](/images/nope.jpg)
 
 Don't worry. I'm here to guide you.
 
@@ -255,12 +249,72 @@ What if we took the parentheses off `fiveseven` on line 5 so it was `var boo = f
 
 Now the value of `boo` is the function itself. So in the lines we just looked at, we imported the app creation code into `express`, then we ran it and put the app object it returned into `app`  by writing `app = express()`.
 
-In 24-26, we're using the `get` method of `app` to define what happens when the app receives an HTTP GET request:
+
+
+Remember when I said that properties were values and methods were functionality? In 24-26, we're using the `get` method of `app` to define what happens when the app receives an HTTP GET request:
 
 ```javascript
 app.get('/', function(request, response) {
   response.sendFile(__dirname + '/views/index.html');
 });
+```
+
+Let's break that down. When you just put a URL in your browser, like www.example.com, it sends an HTTP GET request to the address www.example.com.
+
+Functionality is functions. So we're going to pass some arguments to that `app.get` function. 
+
+1. `'/'` means that we're defining this for the top level of our site: `word-word.glitch.me`.
+2. Our second argument is a function to handle that. 
+   - The app will send it two objects: `request` and `response`.
+   - `request` has information about the GET request.
+   - `response` has methods for responding to them.
+
+Since we're doing minimal processing, our function to handle the response is one line of code. We use the `sendFile` method of the `response` object to send the `index.html` file in our `views` directory.
+
+Let's add a handler for the `/members` link we put on our front page. We'll put it just under the handler for `/`.
+
+```javascript
+app.get('/members', function(request, response) {
+  response.sendFile(__dirname + '/views/members.html');
+});
+```
+
+Not a lot of difference.  We're changing the incoming path in the first argument and changing the path of what we're sending out in the second. 
+
+Add that into `server.js`.
+
+Now, go to your web page and click on that members link.
+
+And you get...
+
+`Error: ENOENT: no such file or directory, stat '/app/views/members.html'`
+
+That's because there's no `members.html` file.
+
+Let's add one.
+
+![](images/addmembers.jpg)
+
+Once the file is added, refresh your page at `word-word.glitch.me/members` and the error message is gone. But there's nothing there.
+
+That's because the file is empty.
+
+Here's a basic template to add into it. You can edit it a bit to personalize it, maybe add some pictures or videos, but don't add any information you don't want the world to see. For now, it's still open to the public.
+
+Next week, we'll learn how to protect it from everyone but the people we want to see it.
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Members-Only Page</title>
+  </head>
+  <body>
+    <h1>
+      Welcome Friends
+    </h1>
+  </body>
+</html>
 ```
 
 
