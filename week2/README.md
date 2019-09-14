@@ -122,7 +122,7 @@ We've got `express` which is the module working as the web server. We'll add `ex
 
 `sqlite` is the module to give us a database for some of the fun stuff we'll be adding. `sequelize` is a module that makes using `sqlite` easier.
 
-We'll add `body-parser` to make getting information submitted from web forms easier. And we'll add `bcrypt` because it provides encryption functions we'll use to help make everything more secure.
+And we'll add `bcrypt` because it provides encryption functions we'll use to help make everything more secure.
 
 ```javascript
   "dependencies": {
@@ -130,9 +130,137 @@ We'll add `body-parser` to make getting information submitted from web forms eas
     "sqlite3": "^4.0.0",
     "sequelize": "^5.18.4",
     "express-session": "^1.16.2",
-    "body-parser": "^1.19.0",
     "bcrypt": "^3.0.6"
   }
+```
+
+Did your log file just say `Check /app/package.json: it has syntax errors, install won't proceed`? Why might that be? How did we break it?
+
+Ahhh, each property needs to be separated with a comma and `dependencies` is a property, so there needs to be a comma after that closing curly brace. Did that fix it?
+
+## Let's make a members page
+
+Oh my! That was a LOT of stuff without our app actually doing ANYTHING (that we can easily see).
+
+Let's make our member's page. That will consist of 3 steps:
+
+1. Put a link to it on our front page.
+2. Tell our server how to route it.
+3. Make a page to show.
+
+That sounds like a lot. But it's not as hard as it seems.
+
+### Put a link on the front page
+
+Let's go into the `views` directory and look at `index.html`.
+
+See the `<footer></footer>` line near the bottom? Let's put it in there.
+
+```html
+<footer>
+	<p align="right">
+        <a href="/members">friends</a>
+    </p>
+</footer>
+```
+
+If we show the page (click the sunglasses), it'll look like this at the bottom of the page...
+
+![cap of link](images/memlink1.jpg) 
+
+But maybe we don't want it to be so obvious. We can change its appearance with CSS. Let's go to the `public` folder and change `style.css`. Let's add this at the end.
+
+```html
+footer a {
+  font-size:8px;
+  color: gray;
+  text-decoration: none;
+}
+```
+
+You might need to reload the page, but it'll look like this.
+
+![capture](images/memlink2.jpg)
+
+Now, we could have just put all those values in the block for `footer`, but maybe we want to put other things in there and we don't want them all small and gray. Just this. BUT, we don't want all our links to be small and gray and have no underline, just this one.
+
+By using `footer a` for the style, we're telling the browser to just style `a` elements inside the `footer` element like that.
+
+Bet you thought you were done learning CSS. Ha! You're ***never*** done learning CSS.
+
+Let's take a break to get that link how you want it. Maybe Google "text-decoration CSS" or "font-weight CSS." Maybe set the color to white. Hmmm.
+
+### Tell our server how to route it
+
+Now, any file you want to just serve statically, you can put in your `public` folder. Statically means that the server doesn't do any checking, any special work. If the file's in that folder, it serves it. Let me show you.
+
+We'll add a file called `boo.html` to the `public` folder. Click the "New File" button, and add `public/boo.html`. Make sure to click "Add This File" after you type the name.
+
+![cap of process](images/addboo.jpg)
+
+Inside the file, we'll just add one line.
+
+```html
+<h1>
+    Did I scare you???
+</h1>
+```
+
+Now add `/boo.html` to the address line in the browser window where you're viewing your site. So it's like `https://word-word.glitch.me/boo.html` (substitute your app's words).
+
+But when we want the server to do special processing of the page or maybe check if someone has permission to even view it, we need to create a route in our web app. That means...
+
+You're going to start writing JavaScript code.
+
+![noooo](/images/nooooo.gif)
+
+Don't worry. I'm here to guide you.
+
+All the app code you'll edit or write, for the moment, is in server.js. This is part of the template Glitch provided for a Node app with SQLite (the database we'll use).
+
+![cap of glitch interface server.js](images/server.jpg)
+
+Let's look at lines 5-7, then 24-26. First 5-7.
+
+```javascript
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+```
+
+`express` is the module that will do our web serving. To bring it into our code, we `require` it and assign it to variable. `body-parser` is another module that makes it easier to get information out of web forms that are submitted. 
+
+What's created in the variable express is a big function that actually creates the server app. So in line 7, we run that function and the result of it goes into the variable `app`.
+
+Now how does that work? Let's do this with a very small function. We'll go to an easy way to run some code called a REPL (read-eval-print loop). An easy, free one is at repl.it. So open https://repl.it/languages/nodejs in your browser.
+
+In the editor, add this code.
+
+```javascript
+function fiveseven(){
+    return 57;
+}
+
+var boo = fiveseven();
+console.log("boo is: " + boo);
+```
+
+Then click the "run" button after it autosaves.
+
+What does it say in the output window? Does it say "boo is: 57"?
+
+This is because the variable `boo` was assigned the result *returned* by running the function `fiveseven`.
+
+What if we took the parentheses off `fiveseven` on line 5 so it was `var boo = fiveseven;`?
+
+Now the value of `boo` is the function itself. So in the lines we just looked at, we imported the app creation code into `express`, then we ran it and put the app object it returned into `app`  by writing `app = express()`.
+
+In 24-26, we're using the `get` method of `app` to define what happens when the app receives an HTTP GET request:
+
+```javascript
+app.get('/', function(request, response) {
+  response.sendFile(__dirname + '/views/index.html');
+});
 ```
 
 
