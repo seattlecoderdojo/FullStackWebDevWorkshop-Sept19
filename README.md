@@ -13,6 +13,7 @@ If you already know the basics of JavaScript and just want to get to building ba
 
 Now that we've made an "about me" page and learned some HTML, let's learn a little about Node.js and JavaScript so we can start building our members page.
 
-## Week 3: Membership has its privileges
+## [Week 3: Membership has its privileges](week3/README.md)
 
 Let's learn about sessions so we can keep track of information about the viewer of the page and how we can use that information to keep them out... or let them in.
+
