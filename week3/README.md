@@ -88,7 +88,7 @@ Here's how to update it:
 
 ```javascript
 app.get('/members', function(request, response) {
-  if (request.cookies.loggedIn === 1) {
+  if (request.cookies.loggedIn === 'true') {
     response.sendFile(__dirname + '/views/members.html');    
   } else {
     response.sendFile(__dirname + '/views/members-only.html');
@@ -98,7 +98,7 @@ app.get('/members', function(request, response) {
 
 On line two, you use an `if` statement, which tells the computer to only run the code between the curly braces if the code between the parentheses evaluates to true.
 
-The code between the parentheses is `request.cookies.loggedIn !== 1`, checking the request object for a cookies object (which is put there by `cookie-parser`, and checking to see if it has a property called `loggedIn` with a value of 1). If it does, it sends the members page. If it doesn't, it sends the members-only page.
+The code between the parentheses is `request.cookies.loggedIn !== 'true'`, checking the request object for a cookies object (which is put there by `cookie-parser`, and checking to see if it has a property called `loggedIn` with a value of 'true'). If it does, it sends the members page. If it doesn't, it sends the members-only page.
 
 To test it, change "Welcome Friends" in members-only.html to "This is for members only."
 
@@ -108,4 +108,23 @@ Now show your project and add `/members` onto the end of the URL. If everything 
 
 Okay, but how do you get to the members page?
 
-You need a cookie.
+You need a cookie. But how do you get one? 
+
+Code up a URL that gives you one. Create a `cookieme` path in your app.
+
+```javascript
+app.get('/cookieme', function(request, response){
+  response.cookie('loggedIn', 'true').send('Me give you cookie.');
+})
+```
+
+The `response.cookie` function takes multiple arguments, but the only two you need are a name for the cookie and a value. Here the name is "loggedIn" and the value is "true." 
+
+But since cookies are sent sort of behind the scenes, the browser will keep trying to load the page until it gets an actual response. By adding `send()` with a message as an argument, you're "chaining" the `response.send` function after `response.cookie` and telling the human looking at the browser "me give you cookie."
+
+![cookie monster praises you](images/cmonster.jpg)
+
+Now try to load the `/members` page. You should be welcomed.
+
+![Welcome members](images/welcome.jpg)
+
