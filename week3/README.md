@@ -178,6 +178,12 @@ Under where you added `cookie-parser` add this:
 
 ```javascript
 var session = require('express-session');
+```
+
+And above your first route add this:
+
+```javascript
+//set up our sessions
 app.use(session(
   {
     'secret': 'you should change this',
@@ -248,16 +254,62 @@ Glitch autosaves and starts your app over and over as you make changes. So chang
 
 ### poof
 
-You'll need to add another dependency to your `package.json` file. Add `"connect-session-sequelize": "^6.0.0"`. Remember to put a comma after the line where you added `cookie-parser`.
+You need to create a session store.
 
-Between these two lines...
+First, add another dependency to your `package.json` file. Add `"connect-session-sequelize": "^6.0.0"`. Remember to put a comma after the line where you added `cookie-parser`.
+
+The Glitch template you started from set up a sqlite3 database for you. So after the block labeled with the `//init sqlite db` comment, add this block of stuff...
 
 ```javascript
-var session = require('express-session');
-app.use(session(
+//set up sequelize to power sessions
+var Sequelize = require('sequelize');
+var storeHolder = new Sequelize({
+  dialect: 'sqlite',
+  storage: './.data/sqlite.db'
+});
+
+// set up sequelize-session-store
+var SequelizeStore = require('connect-session-sequelize')(session.Store);
 ```
 
-Add this block of stuff...
+And last, add to the options in the session setup so it looks like this:
 
+```javascript
+//set up our sessions
+app.use(session(
+  {
+    'secret': 'you should change this',
+    'store': new SequelizeStore({
+      'db': storeHolder
+     }),
+    'resave' : false,
+    'saveUninitialized': false
+  }
+));
 
+// set up / sync the session store
+storeHolder.sync();
+```
+
+This is doing a lot of setup. And explaining it in detail would make people want to go home and pretend they never took this workshop, because it takes time to build to understanding some of the moving parts there.
+
+What you need to know is that `sequelize` created a simplified database handling object which `connect-session-sequelize` used to provide a session store the way `express-session` wanted it.  After it all, `storeHolder.sync()` runs to make sure that the database's Sessions table (where it stores session information)  exists, is created if it isn't, and the important information about it is loaded.
+
+Now, you're still locked out of your member section.
+
+Go back to `/cookieme` and reload to start a login session. Then go back to `/members` and reload.
+
+![success](images/welcome.jpg)
+
+Now, go to your Glitch code, and change 'buddy' to 'pal' on the message sent when the session is started. When you made a change like that before, you got logged out because the server restarted.
+
+What happens when you reload `/members`?
+
+You're still logged in!
+
+Yay!
+
+Next week, you'll learn how to create a database table for users, assign permissions, and create a user login and user management page.
+
+Meanwhile, if you want to see my working code, it's available at https://glitch.com/edit/#!/possible-tibia
 
