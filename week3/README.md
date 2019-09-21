@@ -39,15 +39,15 @@ Now that cookie might create a state of happiness, but it's not going to create 
 
 Open your browser (at least Chrome, Firefox, or Edge) and press your F12 button on your keyboard. If you don't have one or it doesn't work, go to the menu and find "developer tools" or right-click in a web page and select inspect from the menu.
 
-Take Github for example. Go to Github.com, open the developer tools in Chrome, and select the "Application" tab.
+Take Github for example. Go to Github.com, open the developer tools in Chrome, and select the "Application" tab ("Storage" tab in Firefox and Edge).
 
 ![](images/devtools.jpg)
 
-There, in the storage section is a selection called cookies. If you click the arrow next to it, you'll see an option for github.com, and if you click it, you'll see the cookies Github fed you.
+There, in the storage section is a selection called cookies. If you click the arrow next to it, you'll see an option for github.com, and if you click it, you'll see the cookies Github fed you. It doesn't have to match directly. You may have other cookies.
 
 ![](images/devtoolscook.jpg)
 
-It's fed you a number of cookies. Each one has a name and a value. There's a device ID, which is short. The `_gh_sess` value is really long (over 1,000 characters).
+It's fed you a number of cookies. Each one has a name and a value. Here, there's a device ID, which is short. The `_gh_sess` value is really long (over 1,000 characters).
 
 Why should you care about these? You had to use a special tool to even see them. Why did Github send them?
 
@@ -193,7 +193,7 @@ app.use(session(
 ));
 ```
 
-The `require` function loads the module. Then the server `app` is told to use the functionality returned by executing the `session` function created by loading the module. And the session function is passed one argument of an object containing three properties.
+The `require` function loads the module. Then the server `app` is told to use the functionality returned by executing the `session` function created by loading the module. And the `session` function is passed one argument of an object containing three properties.
 
 The **`secret`** is like a password. It will be used as an encryption key for the sessions. Change it.
 
@@ -234,7 +234,7 @@ If you then go to `/cookieme`, and check your cookies, you'll see a new one (you
 
 The `connect.sid` cookie contains a session ID. That is used to get at all the data you have added to the `request.session` object for the user, but it cannot be used to change any of it.
 
-Now go back to `/members` (you may need to reload) and you're .
+Now go back to `/members` (you may need to reload) and you're back to being welcome.
 
 ## So, we're done, right? 
 
