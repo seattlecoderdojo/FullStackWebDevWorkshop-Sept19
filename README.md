@@ -17,3 +17,7 @@ Now that we've made an "about me" page and learned some HTML, let's learn a litt
 
 Let's learn about sessions so we can keep track of information about the viewer of the page and how we can use that information to keep them out... or let them in.
 
+## [Week 4: User Management](week4/README.md)
+
+Let's learn about how to create a database table, store information in it, and check that information when we need to.
+
