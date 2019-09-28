@@ -56,9 +56,120 @@ In a SQL table, each field will have a name and a "datatype." The datatype says 
 
 ![HEDGEHOG ADMIN](images/hedgehog.jpg)
 
+## Create a database
+
+Wait, didn't you already create a database? Yes, you created one for session persistence. But databases are collections of information. 
+
+The database that contains sessions should be its own thing.
+
+The database that runs core site functions like users and messaging should be its own thing.
+
+First open your project from last week. If you lost it or broke it, you can use [possible-tibia](https://glitch.com/edit/#!/possible-tibia), the finished level from last week. Remember, after you open it, to click the project name in the upper left corner and select "Remix Project."
+
+The session store database is `storeHolder`.  
+
+See how it's created?
+
+```javascript
+var storeHolder = new Sequelize({
+  dialect: 'sqlite',
+  storage: './.data/sqlite.db'
+});
+```
+
+Make a duplicate of that (meaning you should have two copies), but change the name on one of them from `storeHolder` to `siteDb`. Remember, capitalization is important. 
+
+This is exciting, but there's very little to do.
+
+## Set up the user table
+
+Remember the table above. For the main user table you just need to store 3 things: `userName`, `password`, and `admin`.  Add this in below the end of the `app.use(session...` function.
+
+```javascript
+//set up users table
+const Users = siteDb.define('users', {
+  // attributes
+  user_name: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    unique: true
+  },
+  password: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  admin: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false
+  }
+});
+```
+
+You're creating a variable called `Users` which will contain a pointer to the table. It's going to call the `define()` function of the database you created. The first argument of the function sets the table name: `users`. 
+
+The second argument tells it the fields to create. **Every** table will get `id`, `createdAt`, and `modifiedAt` fields set automatically, so you don't need to define those. You want to give it a name for the field, and then as properties of the field, the datatype and whether to allow it to have no value at all.
+
+The fields for `username` and `password` are set to `Sequelize.STRING`. That's a value that can be 1 to 255 characters. The field for `admin` is a boolean, just true or false. All of the fields have an additional property of `allowNull` that's set to `false` (it's a boolean!). When you set that, if you try to create a record in the database with one of those fields empty, you'll get an error.
+
+Last, below the `storeHolderSync();` line (just below the function you made to create the table), add another line.
+
+```javascript
+siteDb.sync();
+```
+
+This is a really useful function. It checks to see if the table exists, and if not, it creates it.
+
+Let's stop and check the logs. Your most recent log should look like this:
+
+```javascript
+🍴🎆 Your app is listening on port 3000
+Executing (default): CREATE TABLE IF NOT EXISTS `Sessions` (`sid` VARCHAR(36) PRIMARY KEY, `expires` DATETIME, `data` TEXT, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL);
+Executing (default): CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `userName` VARCHAR(255) NOT NULL, `password` VARCHAR(255) NOT NULL, `admin` TINYINT(1) NOT NULL, `createdAt` DATETIME NOT NULL, `updatedAt` DATETIME NOT NULL);
+Executing (default): PRAGMA INDEX_LIST(`Sessions`)
+Executing (default): PRAGMA INDEX_LIST(`users`)
+Executing (default): PRAGMA INDEX_INFO(`sqlite_autoindex_Sessions_1`)
+```
+
+## Create your admin user
+
+Normally, if I was doing this with PHP and MySQL, I'd be using a tool called phpMyAdmin to build my table and insert the first user. But because we don't have that tool, we have to write code for it in our app.
+
+The code will:
+
+- Check to see if the admin user exists
+- If not, add the user and their password
+
+Now, the LAST thing you want to do is put your admin user's user name and password right into the code that everyone can see and everyone can clone. For sensitive stuff like that, you store it in your `.env` file.
+
+![the .env file](images/env.jpg)
+
+See there's a key next to the name of the file? This is a secure storage area. I can go look at your code, but I can't look at this file. If I remix your code, this file will not have your values in it. Go to `.env` and add in the `ADMIN_USER` and `ADMIN_PW` variables with values you choose. **Beware** of the warning. There can't be spaces around the `=` symbol.
+
+Got that? Good. Go back to `server.js` and scroll all the way to the end. You'll be creating some helper functions and they can go toward the end. Next week, when you create your message board, you'll actually create a module to hold the message board functions.
+
+### Create a `getUser()` function
+
+There are two main ways to declare a function. One is to use the `function` keyword and declare a name. The other is to create a variable with the name you want and add an unnamed function to it. For `getUser()` you'll do it the first way.
+
+```javascript
+function getUser(user) {
+   return Users.findAll({
+       where: {
+           'user_name': user
+       }
+   }); 
+}
+```
+
+You've declared the name of the function is `getUser` and it takes an argument of `user_name`. Whatever value is passed as the argument when you call `getUser()` will be available in the function as the variable `user_name`.
+
+Remember how you assigned the table to `Users`? Now you'll query the table to return 
+
+### Create an `addUser()` function
 
 
-Setting up your user table with your first user
+
+
 
 
 
