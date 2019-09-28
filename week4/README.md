@@ -109,7 +109,11 @@ You're creating a variable called `Users` which will contain a pointer to the ta
 
 The second argument tells it the fields to create. **Every** table will get `id`, `createdAt`, and `modifiedAt` fields set automatically, so you don't need to define those. You want to give it a name for the field, and then as properties of the field, the datatype and whether to allow it to have no value at all.
 
-The fields for `username` and `password` are set to `Sequelize.STRING`. That's a value that can be 1 to 255 characters. The field for `admin` is a boolean, just true or false. All of the fields have an additional property of `allowNull` that's set to `false` (it's a boolean!). When you set that, if you try to create a record in the database with one of those fields empty, you'll get an error.
+The fields for `username` and `password` are set to `Sequelize.STRING`. That's a value that can be 1 to 255 characters. The field for `admin` is a boolean, just true or false. 
+
+All of the fields have an additional property of `allowNull` that's set to `false` (it's a boolean!). When you set that, if you try to create a record in the database with one of those fields empty, you'll get an error.
+
+And the `user_name` field also has a property of `unique` that is set to `true`. This is to make sure you don't get two users with the same exact username. You could check it manually every time you created a user, but this will cause an error if you try to create a record for a user name that already exists. 
 
 Last, below the `storeHolderSync();` line (just below the function you made to create the table), add another line.
 
@@ -149,7 +153,7 @@ Got that? Good. Go back to `server.js` and scroll all the way to the end. You'll
 
 ### Create a `getUser()` function
 
-There are two main ways to declare a function. One is to use the `function` keyword and declare a name. The other is to create a variable with the name you want and add an unnamed function to it. For `getUser()` you'll do it the first way.
+Create a function that asks the database for any records matching a specific user name.
 
 ```javascript
 function getUser(user) {
@@ -161,13 +165,67 @@ function getUser(user) {
 }
 ```
 
-You've declared the name of the function is `getUser` and it takes an argument of `user_name`. Whatever value is passed as the argument when you call `getUser()` will be available in the function as the variable `user_name`.
+You've declared the name of the function is `getUser` and it takes an argument of `user`. Whatever value is passed as the argument when you call `getUser()` will be available in the function as the variable `user`.
 
-Remember how you assigned the table to `Users`? Now you'll query the table to return 
+Remember how you assigned the table to `Users`? Now you'll query the table to return the result of a `findAll()` request `where` the record has a value in the `user_name` field that's the same as the one you passed as an argument.
 
 ### Create an `addUser()` function
 
+Before you create the function to add a user, let's talk about security. Never, ever, never, never, never, ever store passwords in plain text. Passwords should always be encrypted or hashed before you store them in the database.
 
+**Encryption:** When it's used here, it's referring to a 2-way encryption. With the right encryption key, you can decrypt it.
+
+**Hashing:** Used here, it's a 1-way encryption that tries to create a unique value, but in a way that you can hash the same value multiple times and check those hashes against each other to ensure they were hashed from the same value.
+
+The reason to hash a password is if a hacker gets your user database, they don't get anyone's actual password and it takes a LOT of raw computing power to brute force a good hash back into the original string. When a user submits their username and password, you hash the password they submitted and compare it to the hash you stored.
+
+WAY back in the first week, you added `bcrypt` as a dependency in your `package.json` file. Now it's time to use it.
+
+Scroll up to the top of `server.js` and add this line at the bottom of the `// init project` section.
+
+```javascript
+var bcrypt = require('bcrypt');
+```
+
+Now scroll back down to the bottom and create the `addUser()` function. 
+
+```javascript
+function addUser(user, pw, is_admin){
+  //first, hash the password
+  pw = bcrypt.hashSync(pw, 6);
+  // findOrCreate checks if the user exists and creates them if they don't
+  return Users.findOrCreate({
+    where: {
+	  'user_name': user
+	  }, 
+	defaults: {
+	  'password': pw,
+	  'admin': is_admin
+    }
+  });
+}
+```
+
+Here you're taking three arguments: the user name, the password, and a value for is_admin.
+
+First, you use `bcrypt` to hash the password. You call the function `hashSync` and give it two arguments: the password and a number of how many times it should run its function to make it unrecognizable. And the number of times it runs is actually 2 to the power of that number. So if the number was 2, the process would run 4 times and look sort of like this.
+
+```txt
+obfuscate "hello"
+  result is "lorjgnoebn0344"
+obfuscate "lorjgnoebn0344"
+  result is "906450ytgne0pb"
+obfuscate "906450ytgne0pb"
+  result is "350tnobnt0g0ty"
+obfuscate "350tnobnt0g0ty"
+  result is "05hn0p+t-2uj04"
+```
+
+Then you use that to run the `findOrCreate` function from the `Users` table object and return the results.
+
+The argument passed to `findOrCreate` is an object with two child objects. One, assigned to `where` is the condition it should check, just like when it's getting a user. 
+
+Note that it doesn't check the user/password combo.
 
 
 
