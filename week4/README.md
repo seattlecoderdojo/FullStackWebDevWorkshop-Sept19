@@ -11,11 +11,10 @@ Because this is an introductory course, this is not going to be as full-featured
 Today you'll learn:
 
 1. What a database is.
-2. What SQL is.
 3. How to create a new database and table.
 4. How to add data to a database.
 5. How to read data from a database.
-6. How to change data in a database.
+6. How to use that data to let people in or keep them out
 
 ## What is a database?
 
@@ -208,49 +207,203 @@ function addUser(user, pw, is_admin){
 
 Here you're taking three arguments: the user name, the password, and a value for is_admin.
 
-First, you use `bcrypt` to hash the password. You call the function `hashSync` and give it two arguments: the password and a number of how many times it should run its function to make it unrecognizable. And the number of times it runs is actually 2 to the power of that number. So if the number was 2, the process would run 4 times and look sort of like this.
+First, you use `bcrypt` to hash the password. You call the function `hashSync` and give it two arguments: the password and a number of how many times it should run its function to make it unrecognizable. 
 
-```txt
-obfuscate "hello"
-  result is "lorjgnoebn0344"
-obfuscate "lorjgnoebn0344"
-  result is "906450ytgne0pb"
-obfuscate "906450ytgne0pb"
-  result is "350tnobnt0g0ty"
-obfuscate "350tnobnt0g0ty"
-  result is "05hn0p+t-2uj04"
+The number of times it runs is actually 2 to the power of that number. So 2 is actually 4 times, 6 is 64 times, and a lot of people go for 12, which is 4096 times. But since these aren't really powerful servers, 4096 could take a while.
+
+Then you use that to run the `findOrCreate` function from the `Users` table object and return the results. 
+
+Besides specifying that `user_name` should be unique when you created the table, when you add users, `findOrCreate` only adds that record if there isn't a record that matches the `where` condition. It's like a double-check for added protection.
+
+The argument passed to `findOrCreate` is an object with two child objects. One, assigned to `where` is the condition it should check, just like when it's getting a user. The others (`defaults`) are things we want added, but not checked against other records.
+
+### Create a dbInit() function
+
+To bring together everything you've done to make the databases. Take the `sync` commands from under the `// set up / sync the session store` line and put them in a function that will pull together setting up both tables and the admin user.
+
+```javascript
+async function dbInit(){  
+   //make sure we have a database, a table, and an admin user
+  await storeHolder.sync(); 
+  await siteDb.sync();
+  await addUser(process.env.ADMIN_USER, process.env.ADMIN_PW, true);
+}
 ```
 
-Then you use that to run the `findOrCreate` function from the `Users` table object and return the results.
+Here's a new concept, the keywords of `async` and `await`. In Node, a lot of things happen when they happen. That's asynchronous execution... they don't need to be in sync. Instead of returning the information you want, they often return a 'promise'. It's an IOU for the information.
 
-The argument passed to `findOrCreate` is an object with two child objects. One, assigned to `where` is the condition it should check, just like when it's getting a user. 
+Sequelize is designed to return promises.
 
-Note that it doesn't check the user/password combo.
+By declaring the function as `async`, you can make any other function call within it `await` the fulfillment of a promise, so they actually get completed in order and one doesn't start until another finishes. You want your databases and tables to get made on the first run before you try to add a user to them, right?
+
+A lot of people will tell you not to use async/await, because it slows down Node while it waits for things to finish. But when it's part of your server start-up, it's totally okay.
+
+Where you had the sync functions, just put a call to dbInit.
+
+```javascript
+// set up / sync the session store
+dbInit();
+```
+
+Check your logs to make sure nothing's breaking.
+
+### Create a verifyUser() function
+
+Last but not least, you need to be able to make sure the user name and password are correct.
+
+```javascript
+async function verifyUser(user, pw){
+  //set up a default response
+  var response = {
+    logged_in: false,
+    admin: false,
+    error_msg: "No record of this user/password combo exists."
+  }
+
+  //search for the user
+  var user = await getUser(user);
+  if(user.length === 0){
+    return response;
+  }
+  
+  // check the password
+  if(bcrypt.compareSync(pw, user[0].password)){
+    response.logged_in = true;
+    response.admin = user[0].admin;
+    response.error_msg = "";
+  }
+  
+  return response;
+ 
+}
+```
+
+You start by creating a default response. It's an object with three properties... whether the user should be logged in, whether they should be recognized as an administrator, and the default error message if neither is true.
+
+The `getUser()` function returns an array. If there are no matches, it will be empty and the length will be zero. Returning the default response then actually ends execution of the function, so computing power isn't wasted on computing and checking hashes.
+
+Next you use `bcrypt`'s `compareSync` function. The `bcrypt` library has both synchronous and asynchronous ways of doing things. To keep things simple, we'll take the synchronous route and wait until it's done to proceed. 
+
+Use the function to check the password hash in the user record that was returned against the password that was submitted. If it passes, it sends a response with the user logged in and the admin value from their record. For good measure, erase the error message.
+
+And if the password doesn't match, return the defaults.
 
 
 
+## Pause to sync and get current
 
+YAAAAAY! That was a long slog of writing code that didn't do anything you could watch and ooh and ahhh at. But now it's time to write a login page and a logout page.
 
-Creating a login page and adding session vars
+If we decided in Dojo to speed through all that, now is the time to go do three things:
 
+1. Open the "Week 4 - Working Copy 1" project at [incredible-pudding](https://glitch.com/edit/#!/incredible-pudding).
+2. Don't remix it. Just copy the contents of `server.js` from that project to yours.
+3. Make sure to go set the `ADMIN_USER` and `ADMIN_PW` values in your `.env` files for the admin user name and password.
 
+If you've been sort of following along. You might have created a user database with bad data in it. You can delete the whole shebang by opening your logs, clicking the `Console` button, and entering this command.
 
-Creating a logout function
+```bash
+rm .data/sqlite.db
+```
 
+![removing the database](images/deldb.jpg)
 
+It's okay, because the next time you run your app, all your tables will be re-created and right now the only user whose data would be lost is the administrative user, and they'll be re-created too.
 
-Creating an admin page
+## Create login and logout pages
 
-Add user
+The easy part is the logout page.
 
+Go back up to the `/cookieme` route you created last week. Change "cookieme" to "logout."
 
+```javascript
+app.get('/logout', function(request, response){
+  request.session.loggedIn = 'false';
+  request.session.admin = 'false'
+  response.send('You have been sessionized, pal.')
+})
+```
 
-Boot user
+Change the logged in value to `false`, add a line to change the `admin` value to false. And they're logged out.
 
+A harder part is the login page. We're going to create a login form and a route to handle the submission.
 
+Go back to the views folder and open `members-only.html`. Update it to this.
 
-Let user change password & update profile
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Members ONLY!</title>
+  </head>
+  <body style="padding: 25px;">
+    <h1>
+      This is for members only.
+    </h1>
+    <h2>
+      Please login.        
+    </h2>      
+    <form action="/login" method="post">
+      <p>
+        <strong>User name:</strong><br>
+        <input type="text" name="user" size="30">
+      </p>
+      <p>
+        <strong>Password:</strong><br>
+        <input type="password" name="password" size="30">
+      </p>
+      <p>
+        <input type="submit" value="Submit">
+      </p>
+    </form>
+  </body>
+</html>
+```
 
+This adds a `form` element to the page people are sent to when they're not logged in. It has the attributes of `action`, which is generally the URI it should send the form results to, and `method`, which is usually `get` or `post`.
 
+**Get:** Puts the form data in the URL... http(s)://mything.com?username=bob&password=mypassword
 
-Kids grant each other perms
+**Post:** Puts the form data in the request header. Also makes it easier to submit files and other large items.
+
+Although using HTTPS (secure HTTP) like Glitch does will encrypt everything after `?` in the URL, it's generally considered safer to put passwords in a `post` method.
+
+We also have three input types:
+
+**Text:** Exactly what you think it is.
+
+**Password:** Like text, but obscures what's being typed so people can't peek over your shoulder.
+
+**Submit**: Gives you a button with the "value" on it.
+
+## Creating a login handler
+
+Right under the `app.get()` for the logout, let's create an `app.post()` for the login.
+
+```javascript
+app.post('/login', async function(request, response){
+  var status = await verifyUser(request.body.user, request.body.password);
+  if(status.logged_in === true){
+    request.session.loggedIn = 'true';
+	request.session.admin = status.admin;
+	// commenting out the admin redirect for now
+	//if(status.admin == true) {
+    //  response.redirect(302, "/admin");
+    //}
+   }
+	response.redirect(302, "/members");
+})
+
+```
+
+The path is the `/login` the form is using. The handler function is async because you can't log the user in and redirect them until you get the results of their verification. There are ways to do that asynchronously so  your web site would be faster under a heavier load, but this is already pretty complicated, so let's keep this part simple.
+
+The `verifyUser()` results are checked. If the login is successful, the session is updated. If not, it's not. Then the user is sent back to the /members path to have their session checked again. 
+
+If they logged in, they'll go to the members page. If not, back to the form.
+
+Let's get this working.
+
+## NEXT WEEK
+
+We built a LOT of concepts and a lot of foundation this week. That should enable us to set up an error message for unsuccessful logins, an admin page for managing users, and add a simple message board to your members page by the end of next week.
