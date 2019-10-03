@@ -19,5 +19,9 @@ Let's learn about sessions so we can keep track of information about the viewer 
 
 ## [Week 4: User Management](week4/README.md)
 
-Let's learn about how to create a database table, store information in it, and check that information when we need to.
+Let's learn about how to create a database table, store information in it, and check that information when we need to. We'll create our user database, add our admin user, and then set up a login page so you can login as admin.
+
+## [Week 5: Make some memories](week5/README.md)
+
+Last week spent a lot of time on database stuff. Now let's use that stuff. Add a page to add & delete user accounts for your friends. Then add a message database for the members section for a members-only chat feature.
 
